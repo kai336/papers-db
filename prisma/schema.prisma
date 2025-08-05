@@ -17,5 +17,6 @@ model Paper {
   tags      String
   summary   String
   pdfPath   String
+  originalName String?
   createdAt DateTime @default(now())
 }

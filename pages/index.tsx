@@ -33,7 +33,7 @@ export default function Home() {
             <p className="text-sm">{p.summary}</p>
             {p.pdfPath && (
               <a
-                href={p.pdfPath.replace("./", "/")}
+                href={p.pdfPath.replace(/^\/public/, "")}
                 target="_blank"
                 className="text-blue-500 underline"
               >
