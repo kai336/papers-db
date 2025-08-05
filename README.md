@@ -7,6 +7,7 @@ docker compose up --build
 ```
 
 ## ディレクトリ構成
+```
 paper-db/
  ├─ docker-compose.yml
  ├─ Dockerfile
@@ -19,3 +20,4 @@ paper-db/
  │   ├─ api/
  │   │    └─ papers.ts
  ├─ uploads/（PDF保存先）
+```

@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import multer from "multer";
 import nextConnect from "next-connect";
-import path from "path";
 
 const prisma = new PrismaClient();
 const upload = multer({ dest: "./uploads" });
@@ -19,6 +18,7 @@ apiRoute.use(upload.single("pdf"));
 
 apiRoute.get(async (req, res) => {
   const papers = await prisma.paper.findMany({ orderBy: { createdAt: "desc" } });
+  console.log(papers);
   res.json(papers);
 });
 

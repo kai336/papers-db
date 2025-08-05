@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 type Paper = {
@@ -22,9 +23,9 @@ export default function Home() {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">論文一覧</h1>
-      <a href="/add" className="text-blue-500 underline">
+      <Link href="/add" className="text-blue-500 underline">
         新規追加
-      </a>
+      </Link>
       <ul className="mt-4">
         {papers.map((p) => (
           <li key={p.id} className="border-b py-2">
