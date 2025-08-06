@@ -33,12 +33,9 @@ export default function AddPaper() {
     fd.append("title", form.title);
     fd.append("year", form.year);
     fd.append("summary", form.summary);
-    console.log("authors:", authors);
     authors.forEach(a => fd.append("authors[]", a));
     tags.forEach(t => fd.append("tags[]", t));
     if (form.pdf) fd.append("pdf", form.pdf);
-
-    console.log("fd.getAll(\"authors[]\"): ", fd.getAll("authors[]"));
 
     try {
       await fetch("/api/papers", { method: "POST", body: fd });
@@ -54,7 +51,7 @@ export default function AddPaper() {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">論文登録</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4" onKeyDown={(e) => {if (e.key === "Enter") e.preventDefault();}}>
         <input name="title" placeholder="タイトル" onChange={handleChange} className="border p-2 w-full" />
         <TagsInput label="著者（Enterで追加）" values={authors} setValues={setAuthors} />
         <input name="year" placeholder="出版年" onChange={handleChange} className="border p-2 w-full" />

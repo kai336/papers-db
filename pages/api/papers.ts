@@ -24,7 +24,23 @@ function createStorage() {
 
 // --- Initialization ---
 const prisma = new PrismaClient();
-const upload = multer({ storage: createStorage() });
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => cb(null, "./public/uploads"),
+    filename: (req, file, cb) => {
+      const timestamp = Date.now();
+      const ext = path.extname(file.originalname);
+      const base = path.basename(file.originalname, ext).replace(/[^a-zA-Z0-9-_]/g, "_");
+      cb(null, `${base}_${timestamp}${ext}`);
+    }
+  })
+});
+
+const parseFieldArray = (field: any) => {
+  if (Array.isArray(field)) return field;
+  if (typeof field === "string") return [field];
+  return [];
+};
 
 // --- API Route ---
 const apiRoute = nextConnect({
@@ -104,6 +120,34 @@ apiRoute.delete(async (req, res) => {
     res.status(404).json({ error: "削除失敗" });
   }
 });
+
+apiRoute.put(async (req, res) => {
+  try {
+    const id = String(req.query.id);
+    console.log("PUT req.body: ", req.body);
+    // FormData同様にパース
+    const { title, year, summary } = req.body;
+    const authors = parseFieldArray(req.body.authors);
+    const tags = parseFieldArray(req.body.tags);
+    const yearNum = Number(year);
+    const pdfFile = req.files?.pdf?.[0];
+    const pdfPath = pdfFile ? `uploads/${pdfFile.filename}` : undefined;
+
+    const updateData: any = {
+      title, year: yearNum, summary, authors, tags,
+    };
+    if (pdfPath) updateData.pdfPath = pdfPath;
+
+    const updated = await prisma.paper.update({
+      where: { id },
+      data: updateData,
+    });
+    res.json(updated);
+  } catch (e) {
+    res.status(500).json({ error: "更新失敗" });
+  }
+});
+
 
 export default apiRoute;
 
