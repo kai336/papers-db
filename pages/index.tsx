@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import TagsInput from "./TagsInput"; // ← これ必要！
+import TagsInput from "./TagsInput";
+
 
 type Paper = {
   id: string;
@@ -53,59 +54,139 @@ export default function Home() {
   // 編集キャンセル
   const cancelEdit = () => setEditingId(null);
 
+  // 削除
+  const handleDelete = async (id: string) => {
+  if (!confirm('本当に削除しますか？')) return;
+  await fetch(`/api/papers?id=${id}`, { method: 'DELETE' });
+  setPapers(prev => prev.filter(paper => paper.id !== id));
+};
+
+
   // 表示UI
-  return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">論文一覧</h1>
-      <Link href="/add" className="text-blue-500 underline">新規追加</Link>
-      <ul className="mt-4">
-        {papers.map((p) => (
-          <li key={p.id} className="border-b py-2">
-            {editingId === p.id ? (
-              <div>
-                {/* タイトル */}
-                <input
-                  value={editForm.title || ""}
-                  onChange={e => setEditForm({ ...editForm, title: e.target.value })}
-                  className="border px-2"
-                />
-                {/* 著者 */}
+return (
+  <div className="p-4">
+    <h1 className="text-2xl font-bold mb-4">論文一覧</h1>
+    <Link href="/add" className="text-blue-500 underline">新規追加</Link>
+
+    <table className="table-fixed w-full border border-blue-900 border-collapse">
+      <colgroup>
+        <col className="w-1/4" />        {/* authors 列 = 親幅の1/4 */}
+        <col className="w-[300px]" />    {/* title 列 = 300px 固定 */}
+        <col className="w-1/6" />        {/* tags */}
+        <col className="w-1/6" />        {/* summary */}
+        <col className="w-16" />         {/* pdf */}
+        <col className="w-24" />         {/* 操作ボタン列 */}
+      </colgroup>
+
+      <thead>
+        <tr>
+          <th className="border border-blue-900 p-2">author</th>
+          <th className="border border-blue-900 p-2 pr-0">title</th>
+          <th className="border border-blue-900 p-2">tag</th>
+          <th className="border border-blue-900 p-2">summary</th>
+          <th className="border border-blue-900 p-2">pdf</th>
+          <th className="border border-blue-900 p-2"></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {papers.map(p =>
+          editingId === p.id ? (
+            <tr key={p.id}>
+              <td className="border border-blue-900 p-2">
+                {/* TagsInput が className を受け付けない場合は wrapper を w-full に */}
                 <TagsInput
-                  label="著者"
-                  values={editForm.authors || []}
+                  className="w-full"
+                  label=""
+                  values={editForm.authors ?? []}
                   setValues={vals => setEditForm({ ...editForm, authors: vals })}
                 />
-                {/* タグ */}
+              </td>
+
+              <td className="border border-blue-900 p-2 pr-0">
+                <input
+                  className="border p-1 w-full"
+                  value={editForm.title ?? ""}
+                  onChange={e => setEditForm({ ...editForm, title: e.target.value })}
+                />
+              </td>
+
+              <td className="border border-blue-900 p-2">
                 <TagsInput
-                  label="タグ"
-                  values={editForm.tags || []}
+                  className="w-full"
+                  label=""
+                  values={editForm.tags ?? []}
                   setValues={vals => setEditForm({ ...editForm, tags: vals })}
                 />
-                <button onClick={() => saveEdit(p.id)}>保存</button>
-                <button onClick={cancelEdit}>キャンセル</button>
-              </div>
-            ) : (
-              <div>
-                <span>{p.authors.join(", ")} </span>
-                <span>({p.year}) . </span>
-                <span>"{p.title}"</span>
-                <div><span>{p.tags.join(", ")}</span></div>
-                <div>
-                  <button onClick={() => startEdit(p)} className="ml-2">編集</button>
-                  <button onClick={() => handleDelete(p.id)} className="ml-2 text-red-500">削除</button>
-                </div>
+              </td>
+
+              <td className="border border-blue-900 p-2">
+                <input
+                  className="border p-1 w-full"
+                  value={editForm.summary ?? ""}
+                  onChange={e => setEditForm({ ...editForm, summary: e.target.value })}
+                />
+              </td>
+
+              <td className="border border-blue-900 p-2 text-center">
                 {p.pdfPath && (
                   <a
                     href={p.pdfPath.replace(/^\/public/, "")}
                     target="_blank"
-                    className="ml-2 text-blue-500 underline"
-                  >PDFを見る</a>
+                    className="text-blue-500 underline"
+                  >PDF</a>
                 )}
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+              </td>
+
+              <td className="border border-blue-900 p-2 space-y-1">
+                <button
+                  onClick={() => saveEdit(p.id)}
+                  className="bg-blue-300 px-3 py-1 w-full"
+                >
+                  保存
+                </button>
+                <button
+                  onClick={cancelEdit}
+                  className="bg-blue-300 px-3 py-1 w-full"
+                >
+                  キャンセル
+                </button>
+              </td>
+            </tr>
+          ) : (
+            <tr key={p.id}>
+              <td className="border border-blue-900 p-2">{p.authors.join(", ")}</td>
+
+              <td className="border border-blue-900 p-2 pr-0 break-all whitespace-normal">
+                {p.title}
+              </td>
+
+              <td className="border border-blue-900 p-2">
+                {p.tags.join(", ")}
+              </td>
+
+              <td className="border border-blue-900 p-2">{p.summary}</td>
+
+              <td className="border border-blue-900 p-2">
+                {p.pdfPath && (
+                  <a
+                    href={p.pdfPath.replace(/^\/public/, "")}
+                    target="_blank"
+                    className="text-blue-500 underline"
+                  >PDF</a>
+                )}
+              </td>
+
+              <td className="border border-blue-900 p-2 space-y-1">
+                <button onClick={() => startEdit(p)} className="bg-blue-300 px-3 py-1 w-full">編集</button>
+                <button onClick={() => handleDelete(p.id)} className="bg-blue-300 px-3 py-1 w-full">削除</button>
+              </td>
+            </tr>
+          )
+        )}
+      </tbody>
+    </table>
+  </div>
+);
+
 }
