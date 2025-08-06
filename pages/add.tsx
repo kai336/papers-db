@@ -33,10 +33,12 @@ export default function AddPaper() {
     fd.append("title", form.title);
     fd.append("year", form.year);
     fd.append("summary", form.summary);
+    console.log("authors:", authors);
     authors.forEach(a => fd.append("authors[]", a));
     tags.forEach(t => fd.append("tags[]", t));
     if (form.pdf) fd.append("pdf", form.pdf);
 
+    console.log("fd.getAll(\"authors[]\"): ", fd.getAll("authors[]"));
 
     try {
       await fetch("/api/papers", { method: "POST", body: fd });

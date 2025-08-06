@@ -37,22 +37,29 @@ const apiRoute = nextConnect({
   },
 });
 
-apiRoute.use(upload.single("pdf"));
+apiRoute.use(upload.fields([
+  { name: "pdf", maxCount: 1 },
+  { name: "authors", maxCount: 20 },
+  { name: "tags", maxCount: 20 }
+]));
 
 apiRoute.get(async (req, res) => {
   try {
     const papers = await prisma.paper.findMany({ orderBy: { createdAt: "desc" } });
     res.json(papers);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: "DB取得エラー" });
   }
 });
 
 apiRoute.post(async (req, res) => {
   try {
+    console.log("req.body: ", req.body);
+    //console.log("authors[] in req.body:", req.body["authors[]"]);
     const { title, year, summary } = req.body;
-    let authors = req.body["authors[]"];
-    let tags = req.body["tags[]"];
+    let authors = req.body["authors"];
+    let tags = req.body["tags"];
     
     if (typeof authors === "string") authors = [authors];
     if (!Array.isArray(authors)) authors = [];
@@ -62,8 +69,10 @@ apiRoute.post(async (req, res) => {
     const yearNum = Number(toHalfWidth(String(year)));
     if (!yearNum) return res.status(400).json({ error: "yearは必須です" });
     
-    const pdfPath = req.file ? `uploads/${req.file.filename}` : "";
-    const originalName = req.file ? req.file.originalname : "";
+    const pdfFile = req.files?.pdf?.[0];
+    const pdfPath = pdfFile ? `uploads/${pdfFile.filename}` : "";
+    const originalName = pdfFile ? pdfFile.originalname : "";
+
 
     const paper = await prisma.paper.create({
     data: {
@@ -77,6 +86,7 @@ apiRoute.post(async (req, res) => {
       createdAt: new Date(),   // ← ここで付与
     },
     });
+    console.log(paper);
     res.json(paper);
   } catch (error) {
     console.error("登録失敗", error);

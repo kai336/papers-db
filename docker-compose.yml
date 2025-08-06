@@ -18,6 +18,6 @@ services:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
-    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--quiet"]
 volumes:
   mongo-data:
