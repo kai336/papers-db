@@ -2,6 +2,7 @@
 おれだけの論文データベースをaiで作るンゴよぉ
 
 ## 起動
+windowsのdocker desktopを起動
 ```bash
 docker compose up --build
 ```
