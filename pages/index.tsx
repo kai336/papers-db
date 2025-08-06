@@ -2,11 +2,11 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 type Paper = {
-  id: number;
+  id: string;
   title: string;
-  author: string;
+  authors: string[];
   year: number;
-  tags: string;
+  tags: string[];
   summary: string;
   pdfPath: string;
 };
@@ -20,7 +20,7 @@ export default function Home() {
       .then(setPapers);
   }, []);
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     if (!confirm('本当に削除しますか？')) return;
     await fetch(`/api/papers?id=${id}`, { method: 'DELETE' });
     setPapers(prev => prev.filter(paper => paper.id !== id));
@@ -37,8 +37,8 @@ export default function Home() {
       <ul className="mt-4">
         {papers.map((p) => (
           <li key={p.id} className="border-b py-2">
-            {p.author} ({p.year}). "{p.title}". 
-            <div>{p.tags}</div>
+            {Array.isArray(p.authors) ? p.authors.join(", ") : p.authors} ({p.year}). "{p.title}". 
+            <div>{Array.isArray(p.tags) ? p.tags.join(", ") : p.tags}</div>
             <p className="text-sm">{p.summary}</p>
             <button
               onClick={async () => handleDelete(p.id)}

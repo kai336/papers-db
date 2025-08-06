@@ -50,22 +50,42 @@ apiRoute.get(async (req, res) => {
 
 apiRoute.post(async (req, res) => {
   try {
-    const { title, author, year, tags, summary } = req.body;
+    const { title, year, summary } = req.body;
+    let authors = req.body["authors[]"];
+    let tags = req.body["tags[]"];
+    
+    if (typeof authors === "string") authors = [authors];
+    if (!Array.isArray(authors)) authors = [];
+    if (typeof tags === "string") tags = [tags];
+    if (!Array.isArray(tags)) tags = [];
+
     const yearNum = Number(toHalfWidth(String(year)));
     if (!yearNum) return res.status(400).json({ error: "yearは必須です" });
+    
     const pdfPath = req.file ? `uploads/${req.file.filename}` : "";
     const originalName = req.file ? req.file.originalname : "";
+
     const paper = await prisma.paper.create({
-      data: { title, author, year: yearNum, tags, summary, pdfPath, originalName },
+    data: {
+      title,
+      authors,
+      year: yearNum,
+      tags,
+      summary,
+      pdfPath,
+      originalName,
+      createdAt: new Date(),   // ← ここで付与
+    },
     });
     res.json(paper);
   } catch (error) {
+    console.error("登録失敗", error);
     res.status(500).json({ error: "登録失敗" });
   }
 });
 
 apiRoute.delete(async (req, res) => {
-  const id = Number(req.query.id);
+  const id = String(req.query.id);
   if (!id) return res.status(400).json({ error: "ID is required" });
   try {
     await prisma.paper.delete({ where: { id } });

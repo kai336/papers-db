@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
+import TagsInput from "./TagsInput";
 
 export default function AddPaper() {
   const router = useRouter();
+
+  const [authors, setAuthors] = useState<string[]>([]);
+  const [tags, setTags] = useState<string[]>([]);
   const [form, setForm] = useState({
     title: "",
-    author: "",
     year: "",
-    tags: "",
     summary: "",
     pdf: null as File | null,
   });
@@ -29,11 +31,12 @@ export default function AddPaper() {
 
     const fd = new FormData();
     fd.append("title", form.title);
-    fd.append("author", form.author);
     fd.append("year", form.year);
-    fd.append("tags", form.tags);
     fd.append("summary", form.summary);
+    authors.forEach(a => fd.append("authors[]", a));
+    tags.forEach(t => fd.append("tags[]", t));
     if (form.pdf) fd.append("pdf", form.pdf);
+
 
     try {
       await fetch("/api/papers", { method: "POST", body: fd });
@@ -51,9 +54,9 @@ export default function AddPaper() {
       <h1 className="text-2xl font-bold mb-4">論文登録</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input name="title" placeholder="タイトル" onChange={handleChange} className="border p-2 w-full" />
-        <input name="author" placeholder="著者" onChange={handleChange} className="border p-2 w-full" />
+        <TagsInput label="著者（Enterで追加）" values={authors} setValues={setAuthors} />
         <input name="year" placeholder="出版年" onChange={handleChange} className="border p-2 w-full" />
-        <input name="tags" placeholder="タグ（カンマ区切り）" onChange={handleChange} className="border p-2 w-full" />
+        <TagsInput label="タグ（Enterで追加）" values={tags} setValues={setTags} />
         <textarea name="summary" placeholder="要約" onChange={handleChange} className="border p-2 w-full" />
         <input type="file" onChange={handleFile} />
         <button

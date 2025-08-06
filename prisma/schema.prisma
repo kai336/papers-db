@@ -1,6 +1,6 @@
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
 }
 
 generator client {
@@ -8,15 +8,14 @@ generator client {
   binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
-
 model Paper {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   title     String
-  author    String
+  authors    String[] // ← 配列OK！
   year      Int
-  tags      String
+  tags      String[]
   summary   String
   pdfPath   String
   originalName String?
-  createdAt DateTime @default(now())
+  createdAt DateTime?
 }

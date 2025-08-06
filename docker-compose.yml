@@ -10,4 +10,14 @@ services:
       - ./prisma:/app/prisma
     environment:
       - NODE_ENV=development
-    command: sh -c "npm install && npx prisma migrate deploy && npm run dev"
+    command: sh -c "npm install && npx prisma generate && npm run dev"
+  db:
+    image: mongo:8
+    hostname: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+volumes:
+  mongo-data:
