@@ -20,6 +20,14 @@ export default function Home() {
       .then(setPapers);
   }, []);
 
+  const handleDelete = async (id: number) => {
+    if (!confirm('本当に削除しますか？')) return;
+    await fetch(`/api/papers?id=${id}`, { method: 'DELETE' });
+    setPapers(prev => prev.filter(paper => paper.id !== id));
+  };
+
+
+
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">論文一覧</h1>
@@ -29,8 +37,16 @@ export default function Home() {
       <ul className="mt-4">
         {papers.map((p) => (
           <li key={p.id} className="border-b py-2">
-            <strong>{p.title}</strong> ({p.year}) - {p.author}
+            {p.author} ({p.year}). "{p.title}". 
+            <div>{p.tags}</div>
             <p className="text-sm">{p.summary}</p>
+            <button
+              onClick={async () => handleDelete(p.id)}
+              className="text-red-500"
+            >
+              削除
+            </button>
+
             {p.pdfPath && (
               <a
                 href={p.pdfPath.replace(/^\/public/, "")}
