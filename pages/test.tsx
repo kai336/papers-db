@@ -1,21 +1,8 @@
-export default function Test() {
+// pages/index.tsx
+export default function Page() {
   return (
-    <table className="w-full border border-blue-900 border-collapse">
-      
-
-      <thead>
-        <tr>
-          <th className="border border-blue-900">A</th>
-          <th className="border border-blue-900">B</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-        <td style={{ border: "1px solid red" }}>X</td>
-          
-          <td className="border border-blue-900">Y</td>
-        </tr>
-      </tbody>
-    </table>
+    <div className="min-h-screen bg-blue-100 flex items-center justify-center">
+      <h1 className="text-4xl font-bold text-blue-800">Tailwind OK!</h1>
+    </div>
   );
 }
