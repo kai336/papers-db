@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import TagsInput from "./TagsInput";
 import { TitleFetcher , CrossrefMeta } from "@/components/TitleFetcher";
+import Link from "next/link";
 
 export default function AddPaper() {
   const router = useRouter();
@@ -73,6 +74,9 @@ export default function AddPaper() {
 
   return (
     <div className="p-6">
+      <Link href="/" className="text-blue-500 underline mb-4 block">
+        ← 一覧に戻る
+      </Link>
       <h1 className="text-2xl font-bold mb-4">論文登録</h1>
       <form onSubmit={handleSubmit} className="space-y-4" onKeyDown={(e) => {if (e.key === "Enter") e.preventDefault();}}>
         {/* ─── タイトルからCrossrefで自動取得 ─── */}

@@ -21,6 +21,7 @@ export default function Home() {
   }
   const [editForm, setEditForm] = useState<EditForm>({});
   const [filterTags, setFilterTags] = useState<string[]>([]);
+  const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
     fetch("/api/papers")
@@ -64,7 +65,26 @@ export default function Home() {
     if (!confirm('本当に削除しますか？')) return;
     await fetch(`/api/papers?id=${id}`, { method: 'DELETE' });
     setPapers(prev => prev.filter(paper => paper.id !== id));
-  };
+  }; 
+
+  // 検索
+  const displayedPapers = useMemo(() => {
+    return papers
+      .filter(p =>
+        // AND タグフィルタ
+        filterTags.length === 0 || filterTags.every(t => p.tags.includes(t))
+      )
+      .filter(p => {
+        if (!searchText) return true;
+        const q = searchText.toLowerCase();
+        return (
+          p.title.toLowerCase().includes(q) ||
+          p.authors.join(" ").toLowerCase().includes(q) ||
+          p.summary.toLowerCase().includes(q) ||
+          p.tags.join(" ").toLowerCase().includes(q)
+        );
+      });
+  }, [papers, filterTags, searchText]);
 
   // 全論文からユニークなタグ一覧を抽出
   const uniqueTags = useMemo(() => {
@@ -94,6 +114,17 @@ export default function Home() {
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">論文一覧</h1>
+
+      {/* 検索バー */}
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="タイトル/著者/要約/タグで検索..."
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          className="border p-2 w-full"
+        />
+      </div>
 
       {/* --- タグ絞り込み UI --- */}
       <div className="mb-4">
@@ -143,7 +174,7 @@ export default function Home() {
         </thead>
 
         <tbody>
-          {filteredPapers.map((p) =>
+          {displayedPapers.map((p) =>
             editingId === p.id ? (
               <tr key={p.id}>
                 {/* タイトル */}
