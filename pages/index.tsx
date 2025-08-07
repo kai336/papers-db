@@ -16,7 +16,10 @@ type Paper = {
 export default function Home() {
   const [papers, setPapers] = useState<Paper[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState<Partial<Paper>>({});
+  interface EditForm extends Partial<Paper> {
+    pdf?: File | null;
+  }
+  const [editForm, setEditForm] = useState<EditForm>({});
   const [filterTags, setFilterTags] = useState<string[]>([]);
 
   useEffect(() => {
@@ -34,26 +37,27 @@ export default function Home() {
   // 編集確定
   const saveEdit = async (id: string) => {
     const fd = new FormData();
-    fd.append("title", editForm.title);
-    fd.append("year", editForm.year);
-    editForm.authors.forEach((a: string) => fd.append("authors", a));
-    editForm.tags.forEach((t: string) => fd.append("tags", t));
-    fd.append("summary", editForm.summary);
-    if (editForm.pdf) fd.append("pdf", editForm.pdf); // 画像差し替え時のみ
+    if (editForm.title) fd.append("title", editForm.title);
+    if (editForm.year) fd.append("year", String(editForm.year));
+    (editForm.authors ?? []).forEach((a) => fd.append("authors", a));
+    (editForm.tags ?? []).forEach((t) => fd.append("tags", t));
+    if (editForm.summary) fd.append("summary", editForm.summary);
+    if (editForm.pdf) fd.append("pdf", editForm.pdf);
 
     await fetch(`/api/papers?id=${id}`, {
       method: "PUT",
       body: fd,
-      // Content-Typeは書かない
     });
     setEditingId(null);
-    // 一覧再取得
-    const updated = await fetch("/api/papers").then(r => r.json());
+    const updated = await fetch("/api/papers").then((r) => r.json());
     setPapers(updated);
   };
 
   // 編集キャンセル
-  const cancelEdit = () => setEditingId(null);
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditForm({});
+  };
 
   // 削除
   const handleDelete = async (id: string) => {
@@ -142,6 +146,7 @@ export default function Home() {
           {filteredPapers.map((p) =>
             editingId === p.id ? (
               <tr key={p.id}>
+                {/* タイトル */}
                 <td className="border border-blue-900 p-2 pr-0">
                   <input
                     className="border p-1 w-full"
@@ -149,7 +154,7 @@ export default function Home() {
                     onChange={e => setEditForm({ ...editForm, title: e.target.value })}
                   />
                 </td>
-
+                {/* 著者 */}
                 <td className="border border-blue-900 p-2">
                   {/* TagsInput が className を受け付けない場合は wrapper を w-full に */}
                   <TagsInput
@@ -159,7 +164,7 @@ export default function Home() {
                     setValues={vals => setEditForm({ ...editForm, authors: vals })}
                   />
                 </td>
-
+                {/* タグ */}
                 <td className="border border-blue-900 p-2">
                   <TagsInput
                     className="w-full"
@@ -169,24 +174,43 @@ export default function Home() {
                   />
                 </td>
 
+                {/* 要約 */}
                 <td className="border border-blue-900 p-2">
-                  <input
-                    className="border p-1 w-full"
-                    value={editForm.summary ?? ""}
-                    onChange={e => setEditForm({ ...editForm, summary: e.target.value })}
-                  />
+                  <Link href={`/papers/${p.id}`} className="text-blue-600 underline hover:text-blue-800">
+                    ノートを開く
+                  </Link>
                 </td>
 
-                <td className="border border-blue-900 p-2 text-center">
-                  {p.pdfPath && (
+                {/* PDF */}
+                <td className="border p-2 text-center">
+                  {p.pdfPath && !editForm.pdf && (
                     <a
-                      href={p.pdfPath.replace(/^\/public/, "")}
+                      href={`/${p.pdfPath}`}
                       target="_blank"
                       className="text-blue-500 underline"
-                    >PDF</a>
+                    >
+                      現在のPDF
+                    </a>
+                  )}
+                  <input
+                    type="file"
+                    accept="application/pdf"
+                    onChange={(e) =>
+                      setEditForm((f) => ({
+                        ...f,
+                        pdf: e.target.files?.[0] || null,
+                      }))
+                    }
+                    className="mt-1"
+                  />
+                  {editForm.pdf && (
+                    <div className="text-xs text-gray-600 mt-1">
+                      {editForm.pdf.name}
+                    </div>
                   )}
                 </td>
 
+                {/* 操作 */}
                 <td className="border border-blue-900 p-2 space-y-1">
                   <button
                     onClick={() => saveEdit(p.id)}
@@ -201,6 +225,7 @@ export default function Home() {
                     キャンセル
                   </button>
                 </td>
+                
               </tr>
             ) : (
               <tr key={p.id}>
