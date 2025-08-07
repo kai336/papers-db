@@ -1,17 +1,23 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import TagsInput from "./TagsInput";
+import { TitleFetcher , CrossrefMeta } from "@/components/TitleFetcher";
 
 export default function AddPaper() {
   const router = useRouter();
 
   const [authors, setAuthors] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>([]);
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<{
+    title: string;
+    year: string;
+    summary: string;
+    pdf: File | null;
+  }>({
     title: "",
     year: "",
     summary: "",
-    pdf: null as File | null,
+    pdf: null,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -47,16 +53,35 @@ export default function AddPaper() {
     }
   };
 
+  // TitleFetcher からのコールバック
+  const handleCrossref = (meta: CrossrefMeta) => {
+    setForm(f => ({
+      ...f,
+      title:     meta.title,
+      year:      meta.year,
+      summary:   meta.abstract,
+      //doi:       meta.doi,
+      //journal:   meta.journal,
+      //publisher: meta.publisher,
+      //pages:     meta.pages,
+      //url:       meta.url,
+    }));
+    setAuthors(meta.authors);
+    setTags([meta.type, meta.publisher])
+  };
+
 
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">論文登録</h1>
       <form onSubmit={handleSubmit} className="space-y-4" onKeyDown={(e) => {if (e.key === "Enter") e.preventDefault();}}>
-        <input name="title" placeholder="タイトル" onChange={handleChange} className="border p-2 w-full" />
+        {/* ─── タイトルからCrossrefで自動取得 ─── */}
+        <TitleFetcher onFetch={handleCrossref} />
+        <input name="title" value={form.title} placeholder="タイトル" onChange={handleChange} className="border p-2 w-full" />
         <TagsInput label="著者（Enterで追加）" values={authors} setValues={setAuthors} />
-        <input name="year" placeholder="出版年" onChange={handleChange} className="border p-2 w-full" />
+        <input name="year" value={form.year} placeholder="出版年" onChange={handleChange} className="border p-2 w-full" />
         <TagsInput label="タグ（Enterで追加）" values={tags} setValues={setTags} />
-        <textarea name="summary" placeholder="要約" onChange={handleChange} className="border p-2 w-full" />
+        <textarea name="summary" value={form.summary} placeholder="要約" onChange={handleChange} className="border p-2 w-full" />
         <input type="file" onChange={handleFile} />
         <button
           type="submit"
