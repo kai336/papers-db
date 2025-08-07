@@ -88,7 +88,7 @@ export default function PaperDetail({ paper }: Props) {
             onClick={() => setIsEditing(true)}
             className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
         >
-            要約を編集
+            編集
         </button>
       <div className="mt-6">
         {isEditing ? (
