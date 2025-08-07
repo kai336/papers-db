@@ -10,6 +10,7 @@ services:
       - ./prisma:/app/prisma
     environment:
       - NODE_ENV=development
+      - WATCHPACK_POLLING=true
     command: sh -c "npm install && npx prisma generate && npm run dev"
   db:
     image: mongo:8

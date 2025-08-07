@@ -1,3 +1,4 @@
+// /pages/api/papers.ts
 import { PrismaClient } from "@prisma/client";
 import multer from "multer";
 import nextConnect from "next-connect";
@@ -61,6 +62,9 @@ apiRoute.use(upload.fields([
 
 apiRoute.get(async (req, res) => {
   try {
+    console.log("Using DATABASE_URL: ", process.env.DATABASE_URL);
+    await prisma.$connect();
+    
     const id = typeof req.query.id === "string" ? req.query.id : undefined;
 
     if (id) {
