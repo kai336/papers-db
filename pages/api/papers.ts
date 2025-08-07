@@ -61,11 +61,27 @@ apiRoute.use(upload.fields([
 
 apiRoute.get(async (req, res) => {
   try {
-    const papers = await prisma.paper.findMany({ orderBy: { createdAt: "desc" } });
-    res.json(papers);
+    const id = typeof req.query.id === "string" ? req.query.id : undefined;
+
+    if (id) {
+      // id があれば単一取得
+      const paper = await prisma.paper.findUnique({
+        where: { id },
+      });
+      if (!paper) {
+        return res.status(404).json({ error: "論文が見つかりませんでした" });
+      }
+      return res.json(paper);
+    } else {
+      // id がなければ全件取得
+      const papers = await prisma.paper.findMany({
+        orderBy: { createdAt: "desc" },
+      });
+      return res.json(papers);
+    }
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: "DB取得エラー" });
+    console.error("DB取得エラー:", error);
+    return res.status(500).json({ error: "DB取得エラー" });
   }
 });
 

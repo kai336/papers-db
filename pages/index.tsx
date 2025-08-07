@@ -120,17 +120,17 @@ export default function Home() {
       <table className="table-fixed w-full border border-blue-900 border-collapse">
         <colgroup>
           <col className="w-1/4" />        {/* authors 列 = 親幅の1/4 */}
-          <col className="w-[300px]" />    {/* title 列 = 300px 固定 */}
+          <col className="w-1/4" />    {/* title 列 = 300px 固定 */}
           <col className="w-1/6" />        {/* tags */}
           <col className="w-1/6" />        {/* summary */}
-          <col className="w-16" />         {/* pdf */}
-          <col className="w-24" />         {/* 操作ボタン列 */}
+          <col className="w-1/15" />         {/* pdf */}
+          <col className="w-1/15" />         {/* 操作ボタン列 */}
         </colgroup>
 
         <thead>
           <tr>
-            <th className="border border-blue-900 p-2">author</th>
-            <th className="border border-blue-900 p-2 pr-0">title</th>
+            <th className="border border-blue-900 p-2">title</th>
+            <th className="border border-blue-900 p-2 pr-0">author</th>
             <th className="border border-blue-900 p-2">tag</th>
             <th className="border border-blue-900 p-2">summary</th>
             <th className="border border-blue-900 p-2">pdf</th>
@@ -142,6 +142,14 @@ export default function Home() {
           {filteredPapers.map((p) =>
             editingId === p.id ? (
               <tr key={p.id}>
+                <td className="border border-blue-900 p-2 pr-0">
+                  <input
+                    className="border p-1 w-full"
+                    value={editForm.title ?? ""}
+                    onChange={e => setEditForm({ ...editForm, title: e.target.value })}
+                  />
+                </td>
+
                 <td className="border border-blue-900 p-2">
                   {/* TagsInput が className を受け付けない場合は wrapper を w-full に */}
                   <TagsInput
@@ -149,14 +157,6 @@ export default function Home() {
                     label=""
                     values={editForm.authors ?? []}
                     setValues={vals => setEditForm({ ...editForm, authors: vals })}
-                  />
-                </td>
-
-                <td className="border border-blue-900 p-2 pr-0">
-                  <input
-                    className="border p-1 w-full"
-                    value={editForm.title ?? ""}
-                    onChange={e => setEditForm({ ...editForm, title: e.target.value })}
                   />
                 </td>
 
@@ -204,17 +204,21 @@ export default function Home() {
               </tr>
             ) : (
               <tr key={p.id}>
-                <td className="border border-blue-900 p-2">{p.authors.join(", ")}</td>
-
                 <td className="border border-blue-900 p-2 pr-0 break-all whitespace-normal">
                   {p.title}
                 </td>
+
+                <td className="border border-blue-900 p-2">{p.authors.join(", ")}</td>
 
                 <td className="border border-blue-900 p-2">
                   {p.tags.join(", ")}
                 </td>
 
-                <td className="border border-blue-900 p-2">{p.summary}</td>
+                <td className="border border-blue-900 p-2">
+                  <Link href={`/papers/${p.id}`} className="text-blue-600 underline hover:text-blue-800">
+                    ノートを開く
+                  </Link>
+                </td>
 
                 <td className="border border-blue-900 p-2">
                   {p.pdfPath && (
