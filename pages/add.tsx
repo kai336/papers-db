@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
-import TagsInput from "../components/TagsInput";
+import TagsInput from "@/components/TagsInput";
 import { TitleFetcher , CrossrefMeta } from "@/components/TitleFetcher";
 import Link from "next/link";
 
@@ -47,7 +47,7 @@ export default function AddPaper() {
     try {
       await fetch("/api/papers", { method: "POST", body: fd });
       router.push("/");
-    } catch (e) {
+    } catch {
       alert("登録に失敗しました");
     } finally {
       setIsSubmitting(false);
@@ -77,15 +77,8 @@ export default function AddPaper() {
       <Link href="/" className="text-blue-500 underline mb-4 block">
         ← 一覧に戻る
       </Link>
-      
-      <h1 className="text-2xl font-bold mb-6">論文登録</h1>
-      <form
-        onSubmit={handleSubmit}
-        className="space-y-4"
-        onKeyDown={(e) => {
-          if (e.key === "Enter") e.preventDefault();
-        }}
-      >
+      <h1 className="text-2xl font-bold mb-4">論文登録</h1>
+      <form onSubmit={handleSubmit} className="space-y-4" onKeyDown={(e) => {if (e.key === "Enter") e.preventDefault();}}>
         {/* ─── タイトルからCrossrefで自動取得 ─── */}
         <TitleFetcher onFetch={handleCrossref} />
         <input

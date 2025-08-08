@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useEffect, useState, useMemo } from "react";
-import TagsInput from "../components/TagsInput";
+import TagsInput from "@/components/TagsInput";
 
 
 type Paper = {

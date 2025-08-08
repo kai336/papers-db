@@ -1,7 +1,6 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import TagsInput from "../../components/TagsInput";
-import Link from "next/link";
+import TagsInput from "@/components/TagsInput"; // 使っているなら
 
 export default function EditPaper() {
   const router = useRouter();
