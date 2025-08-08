@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useEffect, useState, useMemo } from "react";
-import TagsInput from "./TagsInput";
+import TagsInput from "../components/TagsInput";
 
 
 type Paper = {
@@ -101,18 +101,9 @@ export default function Home() {
     );
   };
 
-  // フィルター済みデータ フィルターなしの場合は全件
-  const filteredPapers = useMemo(
-    () =>
-      isFiltered
-        ? papers.filter((p) => filterTags.every((t) => p.tags.includes(t)))
-        : papers,
-    [isFiltered, filterTags, papers]
-  );
-
   // 表示UI
   return (
-    <div className="p-4">
+    <div className="max-w-5xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-4">論文一覧</h1>
 
       {/* 検索バー */}
@@ -150,9 +141,9 @@ export default function Home() {
           </button>
         )}
       </div>
-      <Link href="/add" className="text-blue-500 underline">新規追加</Link>
+      <Link href="/add" className="inline-block text-blue-500 underline mb-4">新規追加</Link>
 
-      <table className="table-fixed w-full border border-blue-900 border-collapse">
+      <table className="table-fixed w-full border border-blue-900 border-collapse text-sm">
         <colgroup>
           <col className="w-1/4" />        {/* authors 列 = 親幅の1/4 */}
           <col className="w-1/4" />    {/* title 列 = 300px 固定 */}
@@ -245,13 +236,13 @@ export default function Home() {
                 <td className="border border-blue-900 p-2 space-y-1">
                   <button
                     onClick={() => saveEdit(p.id)}
-                    className="bg-blue-300 px-3 py-1 w-full"
+                    className="bg-blue-500 text-white px-3 py-1 rounded w-full"
                   >
                     保存
                   </button>
                   <button
                     onClick={cancelEdit}
-                    className="bg-blue-300 px-3 py-1 w-full"
+                    className="bg-blue-500 text-white px-3 py-1 rounded w-full"
                   >
                     キャンセル
                   </button>
@@ -267,7 +258,14 @@ export default function Home() {
                 <td className="border border-blue-900 p-2">{p.authors.join(", ")}</td>
 
                 <td className="border border-blue-900 p-2">
-                  {p.tags.join(", ")}
+                  {p.tags.map(t => (
+                    <span
+                      key={t}
+                      className="inline-block bg-blue-200 px-2 py-1 rounded mr-1 my-1 text-xs"
+                    >
+                      {t}  
+                    </span>
+                  ))}
                 </td>
 
                 <td className="border border-blue-900 p-2">
@@ -287,8 +285,8 @@ export default function Home() {
                 </td>
 
                 <td className="border border-blue-900 p-2 space-y-1">
-                  <button onClick={() => startEdit(p)} className="bg-blue-300 px-3 py-1 w-full">編集</button>
-                  <button onClick={() => handleDelete(p.id)} className="bg-blue-300 px-3 py-1 w-full">削除</button>
+                  <button onClick={() => startEdit(p)} className="bg-blue-500 text-white px-3 py-1 rounded w-full">編集</button>
+                  <button onClick={() => handleDelete(p.id)} className="bg-blue-500 text-white px-3 py-1 rounded w-full">削除</button>
                 </td>
               </tr>
             )

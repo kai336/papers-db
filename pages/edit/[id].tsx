@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import TagsInput from "../TagsInput"; // 使っているなら
+import TagsInput from "../../components/TagsInput";
+import Link from "next/link";
 
 export default function EditPaper() {
   const router = useRouter();
@@ -63,13 +64,44 @@ export default function EditPaper() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input name="title" value={form.title} onChange={handleChange} />
-      {/* ...省略: 年・要約・ファイルなど、追加 */}
-      <TagsInput label="著者" values={authors} setValues={setAuthors} />
-      <TagsInput label="タグ" values={tags} setValues={setTags} />
-      {/* ... */}
-      <button type="submit" disabled={isSubmitting}>保存</button>
-    </form>
+    <div className="max-w-2xl mx-auto p-6">
+      <Link href="/" className="text-blue-500 underline mb-4 block">
+        ← 一覧に戻る
+      </Link>
+      <h1 className="text-2xl font-bold mb-6">論文編集</h1>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input
+          name="title"
+          value={form.title}
+          onChange={handleChange}
+          placeholder="タイトル"
+          className="border rounded p-2 w-full"
+        />
+        <TagsInput label="著者" values={authors} setValues={setAuthors} />
+        <input
+          name="year"
+          value={form.year}
+          onChange={handleChange}
+          placeholder="出版年"
+          className="border rounded p-2 w-full"
+        />
+        <TagsInput label="タグ" values={tags} setValues={setTags} />
+        <textarea
+          name="summary"
+          value={form.summary}
+          onChange={handleChange}
+          placeholder="要約"
+          className="border rounded p-2 w-full"
+        />
+        <input type="file" onChange={handleFile} className="block" />
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
+        >
+          {isSubmitting ? "保存中..." : "保存"}
+        </button>
+      </form>
+    </div>
   );
 }

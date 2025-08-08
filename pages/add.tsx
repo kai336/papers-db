@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
-import TagsInput from "./TagsInput";
+import TagsInput from "../components/TagsInput";
 import { TitleFetcher , CrossrefMeta } from "@/components/TitleFetcher";
 import Link from "next/link";
 
@@ -73,24 +73,49 @@ export default function AddPaper() {
 
 
   return (
-    <div className="p-6">
+    <div className="max-w-2xl mx-auto p-6">
       <Link href="/" className="text-blue-500 underline mb-4 block">
         ← 一覧に戻る
       </Link>
-      <h1 className="text-2xl font-bold mb-4">論文登録</h1>
-      <form onSubmit={handleSubmit} className="space-y-4" onKeyDown={(e) => {if (e.key === "Enter") e.preventDefault();}}>
+      
+      <h1 className="text-2xl font-bold mb-6">論文登録</h1>
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-4"
+        onKeyDown={(e) => {
+          if (e.key === "Enter") e.preventDefault();
+        }}
+      >
         {/* ─── タイトルからCrossrefで自動取得 ─── */}
         <TitleFetcher onFetch={handleCrossref} />
-        <input name="title" value={form.title} placeholder="タイトル" onChange={handleChange} className="border p-2 w-full" />
+        <input
+          name="title"
+          value={form.title}
+          placeholder="タイトル"
+          onChange={handleChange}
+          className="border rounded p-2 w-full"
+        />
         <TagsInput label="著者（Enterで追加）" values={authors} setValues={setAuthors} />
-        <input name="year" value={form.year} placeholder="出版年" onChange={handleChange} className="border p-2 w-full" />
+        <input
+          name="year"
+          value={form.year}
+          placeholder="出版年"
+          onChange={handleChange}
+          className="border rounded p-2 w-full"
+        />
         <TagsInput label="タグ（Enterで追加）" values={tags} setValues={setTags} />
-        <textarea name="summary" value={form.summary} placeholder="要約" onChange={handleChange} className="border p-2 w-full" />
-        <input type="file" onChange={handleFile} />
+        <textarea
+          name="summary"
+          value={form.summary}
+          placeholder="要約"
+          onChange={handleChange}
+          className="border rounded p-2 w-full"
+        />
+        <input type="file" onChange={handleFile} className="block" />
         <button
           type="submit"
           disabled={isSubmitting}
-          className={`... ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+          className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
         >
           {isSubmitting ? "登録中..." : "登録"}
         </button>
