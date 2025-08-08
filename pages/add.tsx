@@ -73,12 +73,16 @@ export default function AddPaper() {
 
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <Link href="/" className="text-blue-500 underline mb-4 block">
+    <div className="max-w-2xl mx-auto">
+      <Link href="/" className="text-indigo-600 hover:underline mb-4 inline-block">
         ← 一覧に戻る
       </Link>
-      <h1 className="text-2xl font-bold mb-4">論文登録</h1>
-      <form onSubmit={handleSubmit} className="space-y-4" onKeyDown={(e) => {if (e.key === "Enter") e.preventDefault();}}>
+      <h1 className="text-2xl font-bold mb-6">論文登録</h1>
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white shadow rounded-lg p-6 space-y-4"
+        onKeyDown={(e) => {if (e.key === "Enter") e.preventDefault();}}
+      >
         {/* ─── タイトルからCrossrefで自動取得 ─── */}
         <TitleFetcher onFetch={handleCrossref} />
         <input
@@ -108,7 +112,7 @@ export default function AddPaper() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
+          className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded disabled:opacity-50"
         >
           {isSubmitting ? "登録中..." : "登録"}
         </button>

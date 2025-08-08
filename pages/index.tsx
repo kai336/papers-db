@@ -103,8 +103,8 @@ export default function Home() {
 
   // 表示UI
   return (
-    <div className="max-w-5xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">論文一覧</h1>
+    <>
+      <h1 className="text-2xl font-bold mb-6">論文一覧</h1>
 
       {/* 検索バー */}
       <div className="mb-4">
@@ -134,16 +134,21 @@ export default function Home() {
 
         {isFiltered && (
           <button
-            className="ml-4 text-sm text-blue-500 underline"
+            className="ml-4 text-sm text-indigo-600 hover:underline"
             onClick={() => setFilterTags([])}
           >
             （クリア）
           </button>
         )}
       </div>
-      <Link href="/add" className="inline-block text-blue-500 underline mb-4">新規追加</Link>
+      <Link
+        href="/add"
+        className="inline-block bg-indigo-600 text-white px-4 py-2 rounded shadow hover:bg-indigo-700 mb-4"
+      >
+        新規追加
+      </Link>
 
-      <table className="table-fixed w-full border border-blue-900 border-collapse text-sm">
+      <table className="table-fixed w-full text-sm bg-white border border-gray-200 rounded-lg overflow-hidden shadow">
         <colgroup>
           <col className="w-1/4" />        {/* authors 列 = 親幅の1/4 */}
           <col className="w-1/4" />    {/* title 列 = 300px 固定 */}
@@ -155,12 +160,12 @@ export default function Home() {
 
         <thead>
           <tr>
-            <th className="border border-blue-900 p-2">title</th>
-            <th className="border border-blue-900 p-2 pr-0">author</th>
-            <th className="border border-blue-900 p-2">tag</th>
-            <th className="border border-blue-900 p-2">summary</th>
-            <th className="border border-blue-900 p-2">pdf</th>
-            <th className="border border-blue-900 p-2"></th>
+            <th className="border-b border-gray-200 p-2">title</th>
+            <th className="border-b border-gray-200 p-2 pr-0">author</th>
+            <th className="border-b border-gray-200 p-2">tag</th>
+            <th className="border-b border-gray-200 p-2">summary</th>
+            <th className="border-b border-gray-200 p-2">pdf</th>
+            <th className="border-b border-gray-200 p-2"></th>
           </tr>
         </thead>
 
@@ -169,7 +174,7 @@ export default function Home() {
             editingId === p.id ? (
               <tr key={p.id}>
                 {/* タイトル */}
-                <td className="border border-blue-900 p-2 pr-0">
+                <td className="border-b border-gray-200 p-2 pr-0">
                   <input
                     className="border p-1 w-full"
                     value={editForm.title ?? ""}
@@ -177,7 +182,7 @@ export default function Home() {
                   />
                 </td>
                 {/* 著者 */}
-                <td className="border border-blue-900 p-2">
+                <td className="border-b border-gray-200 p-2">
                   {/* TagsInput が className を受け付けない場合は wrapper を w-full に */}
                   <TagsInput
                     className="w-full"
@@ -187,7 +192,7 @@ export default function Home() {
                   />
                 </td>
                 {/* タグ */}
-                <td className="border border-blue-900 p-2">
+                <td className="border-b border-gray-200 p-2">
                   <TagsInput
                     className="w-full"
                     label=""
@@ -197,7 +202,7 @@ export default function Home() {
                 </td>
 
                 {/* 要約 */}
-                <td className="border border-blue-900 p-2">
+                <td className="border-b border-gray-200 p-2">
                   <Link href={`/papers/${p.id}`} className="text-blue-600 underline hover:text-blue-800">
                     ノートを開く
                   </Link>
@@ -209,7 +214,7 @@ export default function Home() {
                     <a
                       href={`/${p.pdfPath}`}
                       target="_blank"
-                      className="text-blue-500 underline"
+                      className="text-indigo-600 hover:underline"
                     >
                       現在のPDF
                     </a>
@@ -233,16 +238,16 @@ export default function Home() {
                 </td>
 
                 {/* 操作 */}
-                <td className="border border-blue-900 p-2 space-y-1">
+                <td className="border-b border-gray-200 p-2 space-y-1">
                   <button
                     onClick={() => saveEdit(p.id)}
-                    className="bg-blue-500 text-white px-3 py-1 rounded w-full"
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded w-full"
                   >
                     保存
                   </button>
                   <button
                     onClick={cancelEdit}
-                    className="bg-blue-500 text-white px-3 py-1 rounded w-full"
+                    className="bg-gray-300 text-gray-700 px-3 py-1 rounded w-full"
                   >
                     キャンセル
                   </button>
@@ -251,13 +256,13 @@ export default function Home() {
               </tr>
             ) : (
               <tr key={p.id}>
-                <td className="border border-blue-900 p-2 pr-0 break-all whitespace-normal">
+                <td className="border-b border-gray-200 p-2 pr-0 break-all whitespace-normal">
                   {p.title}
                 </td>
 
-                <td className="border border-blue-900 p-2">{p.authors.join(", ")}</td>
+                <td className="border-b border-gray-200 p-2">{p.authors.join(", ")}</td>
 
-                <td className="border border-blue-900 p-2">
+                <td className="border-b border-gray-200 p-2">
                   {p.tags.map(t => (
                     <span
                       key={t}
@@ -268,32 +273,41 @@ export default function Home() {
                   ))}
                 </td>
 
-                <td className="border border-blue-900 p-2">
+                <td className="border-b border-gray-200 p-2">
                   <Link href={`/papers/${p.id}`} className="text-blue-600 underline hover:text-blue-800">
                     ノートを開く
                   </Link>
                 </td>
 
-                <td className="border border-blue-900 p-2">
+                <td className="border-b border-gray-200 p-2">
                   {p.pdfPath && (
                     <a
                       href={p.pdfPath.replace(/^\/public/, "")}
                       target="_blank"
-                      className="text-blue-500 underline"
+                      className="text-indigo-600 hover:underline"
                     >PDF</a>
                   )}
                 </td>
 
-                <td className="border border-blue-900 p-2 space-y-1">
-                  <button onClick={() => startEdit(p)} className="bg-blue-500 text-white px-3 py-1 rounded w-full">編集</button>
-                  <button onClick={() => handleDelete(p.id)} className="bg-blue-500 text-white px-3 py-1 rounded w-full">削除</button>
+                <td className="border-b border-gray-200 p-2 space-y-1">
+                  <button
+                    onClick={() => startEdit(p)}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded w-full"
+                  >
+                    編集
+                  </button>
+                  <button
+                    onClick={() => handleDelete(p.id)}
+                    className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded w-full"
+                  >
+                    削除
+                  </button>
                 </td>
               </tr>
             )
           )}
         </tbody>
       </table>
-    </div>
+    </>
   );
-
 }
