@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import TagsInput from "@/components/TagsInput"; // 使っているなら
 
 export default function EditPaper() {
@@ -63,12 +64,12 @@ export default function EditPaper() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <Link href="/" className="text-blue-500 underline mb-4 block">
+    <div className="max-w-2xl mx-auto">
+      <Link href="/" className="text-indigo-600 hover:underline mb-4 inline-block">
         ← 一覧に戻る
       </Link>
       <h1 className="text-2xl font-bold mb-6">論文編集</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="bg-white shadow rounded-lg p-6 space-y-4">
         <input
           name="title"
           value={form.title}
@@ -96,7 +97,7 @@ export default function EditPaper() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
+          className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded disabled:opacity-50"
         >
           {isSubmitting ? "保存中..." : "保存"}
         </button>

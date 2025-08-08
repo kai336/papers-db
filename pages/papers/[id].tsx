@@ -51,8 +51,8 @@ export default function PaperDetail({ paper }: Props) {
   };
 
   return (
-    <div className="prose lg:prose-xl mx-auto p-6">
-      <Link href="/" className="text-blue-500 underline mb-4 block">
+    <div className="prose lg:prose-xl">
+      <Link href="/" className="text-indigo-600 hover:underline mb-4 inline-block">
         ← 一覧に戻る
       </Link>
 
@@ -76,7 +76,7 @@ export default function PaperDetail({ paper }: Props) {
           <a
             href={`/${paper.pdfPath}`}
             target="_blank"
-            className="text-blue-500 underline"
+            className="text-indigo-600 hover:underline"
           >
             PDFを開く
           </a>
@@ -86,7 +86,7 @@ export default function PaperDetail({ paper }: Props) {
       <h2>Summary</h2>
         <button
             onClick={() => setIsEditing(true)}
-            className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
+            className="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded"
         >
             編集
         </button>
