@@ -38,3 +38,8 @@ next-env.d.ts
 /public/uploads
 /generated
 prisma/dev.db
+
+# Cloudflare Pages
+.wrangler
+wrangler.toml.local
+.dev.vars

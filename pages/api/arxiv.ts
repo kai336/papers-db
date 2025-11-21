@@ -17,14 +17,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const metadata = {
       title: entry.title.trim().replace(/\s+/g, " "),
       authors: Array.isArray(entry.author)
-        ? entry.author.map((a: any) => a.name)
+        ? entry.author.map((a: { name: string }) => a.name)
         : [entry.author.name],
       summary: entry.summary.trim(),
       published: entry.published,
       link: entry.id,
     };
     res.status(200).json(metadata);
-  } catch (e) {
+  } catch {
     res.status(500).json({ error: "Failed to parse arXiv response" });
   }
 }

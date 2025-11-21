@@ -24,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const metadata = {
       title:     item.title?.[0]           ?? "",
-      authors:   item.author?.map((a: any) => `${a.family} ${a.given}`) ?? [],
+      authors:   item.author?.map((a: { family: string; given: string }) => `${a.family} ${a.given}`) ?? [],
       abstract:  item.abstract             ?? "",
       doi:       item.DOI                  ?? "",
       year,                                    // 上で取った年

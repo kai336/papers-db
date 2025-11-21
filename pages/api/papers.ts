@@ -3,24 +3,29 @@ import { PrismaClient } from "@prisma/client";
 import multer from "multer";
 import nextConnect from "next-connect";
 import path from "path";
+import type { NextApiRequest, NextApiResponse } from "next";
+
+// --- Types ---
+interface MulterFile {
+  fieldname: string;
+  originalname: string;
+  encoding: string;
+  mimetype: string;
+  size: number;
+  filename: string;
+  path: string;
+}
+
+interface NextApiRequestWithFiles extends NextApiRequest {
+  files?: {
+    pdf?: MulterFile[];
+    [key: string]: MulterFile[] | undefined;
+  };
+}
 
 // --- Utility functions ---
-function sanitizeFileName(name: string): string {
-  return name.replace(/[^a-zA-Z0-9-_]/g, "_");
-}
 function toHalfWidth(str: string): string {
   return str.replace(/[０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xfee0));
-}
-function createStorage() {
-  return multer.diskStorage({
-    destination: (req, file, cb) => cb(null, "./public/uploads"),
-    filename: (req, file, cb) => {
-      const timestamp = Date.now();
-      const ext = path.extname(file.originalname);
-      const base = sanitizeFileName(path.basename(file.originalname, ext));
-      cb(null, `${base}_${timestamp}${ext}`);
-    }
-  });
 }
 
 // --- Initialization ---
@@ -37,14 +42,14 @@ const upload = multer({
   })
 });
 
-const parseFieldArray = (field: any) => {
+const parseFieldArray = (field: unknown) => {
   if (Array.isArray(field)) return field;
   if (typeof field === "string") return [field];
   return [];
 };
 
 // --- API Route ---
-const apiRoute = nextConnect({
+const apiRoute = nextConnect<NextApiRequestWithFiles, NextApiResponse>({
   onError(error, req, res) {
     console.error("API error:", error);
     res.status(501).json({ error: `Error: ${error.message}` });
@@ -136,7 +141,7 @@ apiRoute.delete(async (req, res) => {
   try {
     await prisma.paper.delete({ where: { id } });
     res.json({ message: "Deleted" });
-  } catch (error) {
+  } catch {
     res.status(404).json({ error: "削除失敗" });
   }
 });
@@ -153,8 +158,15 @@ apiRoute.put(async (req, res) => {
     const pdfFile = req.files?.pdf?.[0];
     const pdfPath = pdfFile ? `uploads/${pdfFile.filename}` : undefined;
 
-    const updateData: any = {
-      title, year: yearNum, summary, authors, tags,
+    const updateData: {
+      title: string;
+      year: number;
+      summary: string;
+      authors: string[];
+      tags: string[];
+      pdfPath?: string;
+    } = {
+      title, year: yearNum, summary, authors: authors as string[], tags: tags as string[],
     };
     if (pdfPath) updateData.pdfPath = pdfPath;
 
@@ -163,7 +175,7 @@ apiRoute.put(async (req, res) => {
       data: updateData,
     });
     res.json(updated);
-  } catch (e) {
+  } catch {
     res.status(500).json({ error: "更新失敗" });
   }
 });
