@@ -2,6 +2,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import xml2js from "xml2js";
 
+export const runtime = 'edge';
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query;
   if (typeof id !== "string") {

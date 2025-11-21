@@ -83,15 +83,32 @@ paper-db/
 
 ## Cloudflare Pages へのデプロイ
 
-このアプリケーションは Cloudflare Pages にデプロイできます。
+このアプリケーションを Cloudflare Pages にデプロイする準備ができています。
+
+### ⚠️ 重要な制限事項
+
+現在のアプリケーションは以下の機能を使用しているため、完全な動作には追加の改修が必要です：
+
+1. **ファイルアップロード**: Multer を使用したローカルファイルシステムへの保存
+   - Cloudflare Pages では永続的なファイルシステムが利用できません
+   - Cloudflare R2 または外部ストレージへの移行が必要
+
+2. **Node.js ランタイム機能**: 
+   - `/api/papers` エンドポイントは Node.js 固有の機能を使用
+   - Edge Runtime では動作しない部分があります
+
+3. **推奨される代替デプロイ先**:
+   - **Vercel**: Next.js の完全なサポート、ファイルアップロードも可能
+   - **Railway / Render**: MongoDB と連携しやすい
+   - **Cloudflare Pages + Workers**: R2 へのファイルアップロードに対応後
 
 ### 前提条件
 
 1. Cloudflareアカウント（無料で作成可能）
 2. MongoDB Atlas などのクラウドデータベース（MongoDBを使用）
-3. オブジェクトストレージ（PDF保存用、Cloudflare R2 推奨）
+3. （将来的に）Cloudflare R2 または他のオブジェクトストレージ
 
-### デプロイ手順
+### デプロイ手順（制限付き）
 
 #### 1. MongoDB の準備
 
@@ -209,3 +226,88 @@ npm run build
 - [Next.js on Cloudflare Pages](https://developers.cloudflare.com/pages/framework-guides/nextjs/)
 - [MongoDB Atlas ドキュメント](https://www.mongodb.com/docs/atlas/)
 - [Cloudflare R2 ドキュメント](https://developers.cloudflare.com/r2/)
+
+---
+
+## Vercel へのデプロイ（推奨）
+
+現在のアプリケーション構成では、**Vercel** へのデプロイが最も簡単で、すべての機能が問題なく動作します。
+
+### Vercel デプロイ手順
+
+#### 1. MongoDB Atlas の準備
+
+上記の「MongoDB の準備」セクションと同じ手順でMongoDBを準備してください。
+
+#### 2. Vercel にデプロイ
+
+1. [Vercel](https://vercel.com) にアクセスしてサインアップ（GitHub アカウントで連携可能）
+2. **New Project** をクリック
+3. GitHub リポジトリ `kai336/papers-db` をインポート
+4. **Framework Preset** は自動的に `Next.js` が選択されます
+5. **Environment Variables** で以下を設定：
+   ```
+   DATABASE_URL=mongodb+srv://username:password@cluster.mongodb.net/papers-db
+   ```
+6. **Deploy** をクリック
+
+#### 3. デプロイ完了
+
+数分後、デプロイが完了し、URLが発行されます。このURLからアプリケーションにアクセスできます。
+
+### Vercel の利点
+
+- ✅ Next.js の完全サポート（開発元が同じ）
+- ✅ ファイルアップロード機能がそのまま動作
+- ✅ API Routes が完全に動作
+- ✅ サーバーサイドレンダリング（SSR）のサポート
+- ✅ 自動的な HTTPS 対応
+- ✅ 無料プランで十分な機能
+
+### GitHub Actions による自動デプロイ
+
+Vercel は GitHub と連携しているため、main/master ブランチへの push で自動的にデプロイされます。
+
+### 参考
+
+- [Vercel ドキュメント](https://vercel.com/docs)
+- [Vercel + MongoDB Atlas](https://vercel.com/guides/deploying-nextjs-mongodb-atlas)
+
+---
+
+## その他のデプロイオプション
+
+### Railway へのデプロイ
+
+[Railway](https://railway.app) は、データベースとアプリケーションを一緒にデプロイできるプラットフォームです。
+
+1. Railway にサインアップ
+2. **New Project** → **Deploy from GitHub repo** を選択
+3. リポジトリを選択
+4. 環境変数 `DATABASE_URL` を設定
+5. 自動的にデプロイが開始されます
+
+### Render へのデプロイ
+
+[Render](https://render.com) も同様に簡単にデプロイできます。
+
+1. Render にサインアップ
+2. **New** → **Web Service** を選択
+3. GitHub リポジトリを接続
+4. **Build Command**: `npm install && npm run build`
+5. **Start Command**: `npm start`
+6. 環境変数 `DATABASE_URL` を設定
+7. **Create Web Service** をクリック
+
+---
+
+## まとめ：どのプラットフォームを選ぶべきか
+
+| プラットフォーム | 推奨度 | 理由 |
+|--------------|--------|------|
+| **Vercel** | ⭐⭐⭐⭐⭐ | Next.js に最適、すべての機能が動作、無料プランが充実 |
+| **Railway** | ⭐⭐⭐⭐ | DB も含めてデプロイ可能、設定が簡単 |
+| **Render** | ⭐⭐⭐⭐ | 無料プランあり、シンプルな設定 |
+| **Cloudflare Pages** | ⭐⭐⭐ | 高速だが、ファイルアップロードに制限あり、改修が必要 |
+
+現時点では **Vercel** が最も推奨されます。
