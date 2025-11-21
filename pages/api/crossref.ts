@@ -1,7 +1,8 @@
 // pages/api/crossref.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 
-export const runtime = 'edge';
+// Note: Keeping Node.js runtime for reliable API compatibility
+// export const runtime = 'edge';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { title } = req.query;
