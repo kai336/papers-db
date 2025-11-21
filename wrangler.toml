@@ -1,0 +1,6 @@
+name = "papers-db"
+compatibility_date = "2024-11-21"
+pages_build_output_dir = ".vercel/output/static"
+
+# Environment variables (these need to be set in Cloudflare Pages dashboard)
+# DATABASE_URL = "your-mongodb-connection-string"

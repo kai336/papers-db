@@ -1,6 +1,9 @@
 // pages/api/crossref.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 
+// Note: Keeping Node.js runtime for reliable API compatibility
+// export const runtime = 'edge';
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { title } = req.query;
   if (typeof title !== "string" || !title.trim()) {
@@ -24,7 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const metadata = {
       title:     item.title?.[0]           ?? "",
-      authors:   item.author?.map((a: any) => `${a.family} ${a.given}`) ?? [],
+      authors:   item.author?.map((a: { family: string; given: string }) => `${a.family} ${a.given}`) ?? [],
       abstract:  item.abstract             ?? "",
       doi:       item.DOI                  ?? "",
       year,                                    // 上で取った年

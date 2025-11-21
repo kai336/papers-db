@@ -1,9 +1,8 @@
-// next.config.js
+// next.config.ts
 
-import { webpack } from "next/dist/compiled/webpack/webpack";
+import type { NextConfig } from 'next';
 
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+const nextConfig: NextConfig = {
   webpack: (config) => {
     config.watchOptions = {
       poll: 300,
@@ -11,6 +10,10 @@ const nextConfig = {
     };
     return config;
   },
+  // Cloudflare Pages compatibility
+  images: {
+    unoptimized: true,
+  },
 };
 
-module.exports = nextConfig;
+export default nextConfig;
